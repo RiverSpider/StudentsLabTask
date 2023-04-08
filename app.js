@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { Client } = require('pg');
 const app = express();
 const port = 3001;
 
@@ -29,14 +28,8 @@ const swaggerSpec = swaggerJsdoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
-
-const client = new Client({ 
-  user: 'postgres',
-  host: 'localhost',
-  database: 'feedback',
-  password: '',
-  port: 5432,
-});
+const client = require('./db');
+   const feedback = 'feedback';
 
 client.connect();
 
