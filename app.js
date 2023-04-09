@@ -26,22 +26,20 @@ const options = {
 const swaggerSpec = swaggerJsdoc(options);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+const { Client } = require('pg');
 
+const client = new Client({
+  	user: 'RiverSpider',
+  	host: 'ep-red-moon-190484.us-east-2.aws.neon.tech',
+  	database: 'neondb',
+  	password: 'wOSc5kgpbRD4',
+  	port: 5432,
+	ssl: {
+    		rejectUnauthorized: false,
+  	},
+});
 
-const postgres = require('postgres');
-require('dotenv').config();
-
-const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
-const URL = `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?options=project%3D${ENDPOINT_ID}`;
-
-const sql = postgres(URL, { ssl: 'require' });
-
-async function getPgVersion() {
-  const result = await sql`select version()`;
-  console.log(result);
-}
-
-getPgVersion();
+client.connect();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
