@@ -16,7 +16,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3001',
+        url: 'https://studentslab.onrender.com',
       },
     ],
   },
@@ -28,10 +28,20 @@ const swaggerSpec = swaggerJsdoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
-const client = require('./db');
-   const feedback = 'feedback';
+const postgres = require('postgres');
+require('dotenv').config();
 
-client.connect();
+const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
+const URL = `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?options=project%3D${ENDPOINT_ID}`;
+
+const sql = postgres(URL, { ssl: 'require' });
+
+async function getPgVersion() {
+  const result = await sql`select version()`;
+  console.log(result);
+}
+
+getPgVersion();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
