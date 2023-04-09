@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = 3001;
 
+
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
@@ -62,6 +63,7 @@ let answers = [];
  */
 
 app.get('/', (req, res) => {  
+const userId = req.ip;
 res.send(`  
 	<h3>Посмотреть форму</h3>
 	<form action="/lookup" method="post"> 
@@ -115,9 +117,6 @@ res.send(`
  	}  
 `);  
 });  
-
-
-
 
 
 /**
@@ -180,9 +179,9 @@ app.post('/questions', (req, res) => {
  */
 
 app.post('/submit', (req, res) => {
-  const { form } = req.body;
+  const { form, userId } = req.body;
 client.query(`
-  	CREATE TABLE IF NOT EXISTS ${form} (
+  	CREATE TABLE IF NOT EXISTS ${form}${userId} (
     		id SERIAL PRIMARY KEY,
     		question TEXT,
     		answerType TEXT NOT NULL,
@@ -191,7 +190,7 @@ client.query(`
 `);
 	questions.forEach(q => {
   		client.query(`
-    			INSERT INTO ${form} (question, answerType, answer)
+    			INSERT INTO ${form}${userId} (question, answerType, answer)
     			VALUES ($1, $2, $3);
   		`, [q.question, q.answerType, q.answer], (err, res) => {
     		if (err) throw err;
@@ -253,10 +252,10 @@ app.listen(port, () => {
  */
 app.post('/lookup', async (req, res) => {
 	try {
-		const { lookup } = req.body;
+		const { lookup, userId } = req.body;
 		const result = await client.query(`
       			SELECT question, answertype, answer
-      			FROM ${lookup}
+      			FROM ${lookup}${userId}
     		`);
 		let html = '';
 		for (const row of result.rows) {
