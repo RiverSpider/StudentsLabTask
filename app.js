@@ -27,21 +27,20 @@ const options = {
 const swaggerSpec = swaggerJsdoc(options);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 const { Client } = require('pg');
 
 const client = new Client({
-  	user: 'RiverSpider',
-  	host: 'ep-red-moon-190484.us-east-2.aws.neon.tech',
-  	database: 'neondb',
-  	password: 'wOSc5kgpbRD4',
-  	port: 5432,
-	ssl: {
-    		rejectUnauthorized: false,
-  	},
+    user: 'feedback_ynhh_user',
+    host: 'dpg-cgq0gmpeuhlq287s02mg-a.frankfurt-postgres.render.com',
+    database: 'feedback_ynhh',
+    password: 'rO1OHqyD8aByWbtpO4jJqkLzUWK6hBUX',
+    port: 5432,
+  ssl: {
+        rejectUnauthorized: false,
+    },
 });
-
 client.connect();
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
