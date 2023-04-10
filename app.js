@@ -63,7 +63,6 @@ let answers = [];
  */
 
 app.get('/', (req, res) => {  
-const userId = req.ip;
 res.send(`  
 	<h3>Посмотреть форму</h3>
 	<form action="/lookup" method="post"> 
@@ -179,9 +178,10 @@ app.post('/questions', (req, res) => {
  */
 
 app.post('/submit', (req, res) => {
-  const { form, userId } = req.body;
+  const { form } = req.body;
+const userId = req.ip;
 client.query(`
-  	CREATE TABLE IF NOT EXISTS ${form}${userId} (
+  	CREATE TABLE IF NOT EXISTS ${form} (
     		id SERIAL PRIMARY KEY,
     		question TEXT,
     		answerType TEXT NOT NULL,
@@ -190,7 +190,7 @@ client.query(`
 `);
 	questions.forEach(q => {
   		client.query(`
-    			INSERT INTO ${form}${userId} (question, answerType, answer)
+    			INSERT INTO ${form} (question, answerType, answer)
     			VALUES ($1, $2, $3);
   		`, [q.question, q.answerType, q.answer], (err, res) => {
     		if (err) throw err;
@@ -252,10 +252,11 @@ app.listen(port, () => {
  */
 app.post('/lookup', async (req, res) => {
 	try {
-		const { lookup, userId } = req.body;
+		const { lookup } = req.body;
+		const userId = req.ip;
 		const result = await client.query(`
       			SELECT question, answertype, answer
-      			FROM ${lookup}${userId}
+      			FROM ${lookup}
     		`);
 		let html = '';
 		for (const row of result.rows) {
@@ -291,7 +292,7 @@ res.send(`${html}
 
 `); } catch (err) {
 	console.error(err);
-   	res.status(500).send('Internal Server Error');
+   	res.status(500).send('Таблицы не существует<form action="/back" method="post"><button type="submit">Назад</button></form>');
 }
 }); 
 
