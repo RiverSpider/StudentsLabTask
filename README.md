@@ -29,13 +29,12 @@
 ### Примеры кода
    
 javascript
-	const pool = require('./db');
+	const client = require('./db');
 
-   	pool.query(SELECT * FROM feedback, (err, res) => {
+   	client.query(SELECT * FROM feedback, (err, res) => {
      	if (err) {
        		console.error(err);
        		return;
      	}
     	console.log(res.rows);
-     	pool.end();
    	});
